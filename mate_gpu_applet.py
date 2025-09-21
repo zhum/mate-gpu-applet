@@ -23,14 +23,15 @@ class GPUApplet:
         
     def get_gpu_usage(self):
         try:
-            result = subprocess.run(['nvidia-smi', '--query-gpu=utilization.gpu,temperature.gpu', 
+            result = subprocess.run(['nvidia-smi', '--query-gpu=utilization.gpu,memory.used,memory.total,temperature.gpu', 
                                    '--format=csv,noheader,nounits'], 
                                   capture_output=True, text=True, timeout=5)
             if result.returncode == 0:
                 lines = result.stdout.strip().split('\n')
                 if lines:
-                    usage, temp = lines[0].split(', ')
-                    return f"GPU: {usage}% {temp}°C"
+                    usage, mem_used, mem_total, temp = lines[0].split(', ')
+                    mem_percent = round((int(mem_used) / int(mem_total)) * 100)
+                    return f"GPU: {usage}% {temp}°C | Mem: {mem_percent}%"
         except:
             pass
         
@@ -38,10 +39,15 @@ class GPUApplet:
             result = subprocess.run(['radeontop', '-d', '-l1'], 
                                   capture_output=True, text=True, timeout=5)
             if result.returncode == 0:
-                match = re.search(r'gpu (\d+\.\d+)%', result.stdout)
-                if match:
-                    usage = match.group(1)
-                    return f"GPU: {usage}%"
+                gpu_match = re.search(r'gpu (\d+\.\d+)%', result.stdout)
+                vram_match = re.search(r'vram (\d+\.\d+)%', result.stdout)
+                if gpu_match:
+                    usage = gpu_match.group(1)
+                    if vram_match:
+                        vram = vram_match.group(1)
+                        return f"GPU: {usage}% | Mem: {vram}%"
+                    else:
+                        return f"GPU: {usage}%"
         except:
             pass
             
