@@ -1,0 +1,12 @@
+[Applet Factory]
+Id=GPUAppletFactory
+InProcess=false
+Location=/usr/lib/mate-applets/mate_gpu_applet.py
+Name=GPU Monitor
+Description=Monitor GPU usage and temperature
+
+[GPUApplet]
+Name=GPU Monitor
+Description=Displays GPU usage and temperature in the panel
+Icon=utilities-system-monitor
+MateComponentId=OAFIID:MATE_GPUApplet;
