@@ -4,14 +4,14 @@ import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('MatePanelApplet', '4.0')
 
-from gi.repository import Gtk, MatePanelApplet, GLib
-import subprocess
-import re
-import json
-import os
-import cairo
-from collections import deque
-import time
+from gi.repository import Gtk, MatePanelApplet, GLib   # pyright: ignore[reportAttributeAccessIssue] # noqa: E402,E501
+import cairo                                           # noqa
+import json                                            # noqa
+import os                                              # noqa
+import re                                              # noqa
+import subprocess                                      # noqa
+import time                                            # noqa
+from collections import deque                          # noqa
 
 
 class GPUApplet:

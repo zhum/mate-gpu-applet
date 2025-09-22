@@ -25,6 +25,7 @@ A comprehensive MATE desktop panel applet that monitors GPU performance with bot
 ## Installation
 
 1. Install dependencies:
+
    ```bash
    sudo apt install python3-gi mate-panel-dev
    # For AMD support:
@@ -32,6 +33,7 @@ A comprehensive MATE desktop panel applet that monitors GPU performance with bot
    ```
 
 2. Run the install script:
+
    ```bash
    chmod +x install.sh
    ./install.sh
@@ -45,19 +47,25 @@ A comprehensive MATE desktop panel applet that monitors GPU performance with bot
 ## Usage
 
 ### Text Display Mode
+
 The applet shows GPU information as text in the panel: `GPU: 45% | 65°C | Mem: 78%`
 
 ### Chart Display Mode
+
 Switch to chart mode for mini real-time graphs in the panel showing trends for each enabled metric.
 
 ### Preferences
+
 Right-click the applet and select "Preferences" to:
+
 - Enable/disable individual metrics (GPU load, temperature, memory)
 - Switch between text and chart display modes
 - Adjust chart width (30-100 pixels)
 
 ### Full Chart Window
+
 Right-click the applet and select "Show Charts" to open a detailed chart window with:
+
 - Multi-line graphs for all enabled metrics
 - Grid lines and value labels
 - Color-coded legend
@@ -66,6 +74,7 @@ Right-click the applet and select "Show Charts" to open a detailed chart window 
 ## Development
 
 To test the applet without installing:
+
 ```bash
 python3 mate_gpu_applet.py
 ```
@@ -73,22 +82,10 @@ python3 mate_gpu_applet.py
 ## Configuration
 
 Settings are automatically saved to `~/.config/mate-gpu-applet.json` and include:
+
 - Which metrics to display
 - Text vs chart display mode preference
 - Chart width setting
-
-## Screenshots
-
-### Text Mode
-```
-GPU: 45% | 65°C | Mem: 78%
-```
-
-### Chart Mode
-Mini real-time charts showing trend lines for each enabled metric.
-
-### Chart Window
-Full-featured chart window with detailed graphs, grid, and legend.
 
 ## Files
 
@@ -101,4 +98,4 @@ Full-featured chart window with detailed graphs, grid, and legend.
 
 ## License
 
-GPL-3.0 License
+Apache-2.0 License
