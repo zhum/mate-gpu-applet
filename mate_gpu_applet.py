@@ -25,7 +25,9 @@ class GPUApplet:
             'show_temperature': True,
             'show_memory': True,
             'show_chart': False,
-            'chart_width': 50  # Width of each individual chart
+            'chart_width': 50,  # Width of each individual chart
+            'chart_transparency': 50,  # Chart fill transparency (0-100)
+            'chart_font_size': 10  # Font size for chart labels
         }
         self.load_preferences()
 
@@ -241,6 +243,34 @@ class GPUApplet:
 
         content.pack_start(width_box, False, False, 0)
 
+        # Chart transparency control
+        transparency_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,
+                                   spacing=10)
+        transparency_label = Gtk.Label("Chart Transparency (%):")
+        transparency_box.pack_start(transparency_label, False, False, 0)
+
+        self.chart_transparency_spin = Gtk.SpinButton()
+        self.chart_transparency_spin.set_range(0, 100)
+        self.chart_transparency_spin.set_increments(5, 10)
+        self.chart_transparency_spin.set_value(self.preferences['chart_transparency'])
+        transparency_box.pack_start(self.chart_transparency_spin, False, False, 0)
+
+        content.pack_start(transparency_box, False, False, 0)
+
+        # Chart font size control
+        font_size_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,
+                                spacing=10)
+        font_size_label = Gtk.Label("Chart Font Size:")
+        font_size_box.pack_start(font_size_label, False, False, 0)
+
+        self.chart_font_size_spin = Gtk.SpinButton()
+        self.chart_font_size_spin.set_range(6, 16)
+        self.chart_font_size_spin.set_increments(1, 2)
+        self.chart_font_size_spin.set_value(self.preferences['chart_font_size'])
+        font_size_box.pack_start(self.chart_font_size_spin, False, False, 0)
+
+        content.pack_start(font_size_box, False, False, 0)
+
         dialog.show_all()
 
         response = dialog.run()
@@ -248,6 +278,8 @@ class GPUApplet:
             # Save preferences
             old_chart_mode = self.preferences['show_chart']
             old_chart_width = self.preferences['chart_width']
+            old_transparency = self.preferences['chart_transparency']
+            old_font_size = self.preferences['chart_font_size']
             self.preferences['show_gpu_load'] = \
                 self.gpu_load_check.get_active()
             self.preferences['show_temperature'] = \
@@ -258,6 +290,10 @@ class GPUApplet:
                 self.chart_view_check.get_active()
             self.preferences['chart_width'] = \
                 int(self.chart_width_spin.get_value())
+            self.preferences['chart_transparency'] = \
+                int(self.chart_transparency_spin.get_value())
+            self.preferences['chart_font_size'] = \
+                int(self.chart_font_size_spin.get_value())
             self.save_preferences()
 
             # Switch display mode if chart preference changed
@@ -267,6 +303,10 @@ class GPUApplet:
             elif (self.preferences['show_chart'] and
                   old_chart_width != self.preferences['chart_width']):
                 self.update_chart_sizes()
+            # Refresh charts if transparency or font size changed
+            elif (old_transparency != self.preferences['chart_transparency'] or
+                  old_font_size != self.preferences['chart_font_size']):
+                self.refresh_charts()
 
         dialog.destroy()
 
@@ -383,15 +423,40 @@ class GPUApplet:
             if not any(d is not None for d in data):
                 continue
 
-            cr.set_source_rgb(*color)
-            cr.set_line_width(2)
-
             valid_points = [(i, val) for i, val in enumerate(data)
                             if val is not None]
             if len(valid_points) < 2:
                 continue
 
-            # Draw line
+            # Calculate transparency alpha value (0-1)
+            alpha = self.preferences['chart_transparency'] / 100.0
+
+            # Draw filled area
+            cr.set_source_rgba(*color, alpha)
+            first_point = True
+            for i, value in valid_points:
+                x = margin_left + (chart_width * i / (len(data) - 1))
+                y = (margin_top + chart_height -
+                     (chart_height * value / max_val))
+
+                if first_point:
+                    cr.move_to(x, y)
+                    first_point = False
+                else:
+                    cr.line_to(x, y)
+
+            # Close the path by drawing to bottom corners
+            if valid_points:
+                last_x = margin_left + (chart_width * (len(data) - 1) / (len(data) - 1))
+                first_x = margin_left
+                cr.line_to(last_x, margin_top + chart_height)
+                cr.line_to(first_x, margin_top + chart_height)
+                cr.close_path()
+                cr.fill()
+
+            # Draw line border
+            cr.set_source_rgb(*color)
+            cr.set_line_width(2)
             first_point = True
             for i, value in valid_points:
                 x = margin_left + (chart_width * i / (len(data) - 1))
@@ -452,13 +517,13 @@ class GPUApplet:
         # Chart configuration
         config = {
             'gpu': {'data': self.gpu_data, 'color': (0.3, 0.7, 1.0),
-                    'label': 'GPU',
+                    'label': 'gpu',
                     'enabled': self.preferences['show_gpu_load']},
             'temp': {'data': self.temp_data, 'color': (1.0, 0.5, 0.2),
-                     'label': 'TEMP',
+                     'label': 'tmp',
                      'enabled': self.preferences['show_temperature']},
             'memory': {'data': self.memory_data, 'color': (0.2, 0.8, 0.2),
-                       'label': 'MEM',
+                       'label': 'mem',
                        'enabled': self.preferences['show_memory']}
         }
 
@@ -506,13 +571,37 @@ class GPUApplet:
         chart_width = width - (margin * 2)
         chart_height = height - (margin * 2)
 
-        cr.set_source_rgb(*color)
-        cr.set_line_width(1.5)
-
         valid_points = [(i, val) for i, val in enumerate(data)
                         if val is not None]
         if len(valid_points) >= 2:
-            # Draw line chart
+            # Calculate transparency alpha value (0-1)
+            alpha = self.preferences['chart_transparency'] / 100.0
+
+            # Draw filled area
+            cr.set_source_rgba(*color, alpha)
+            first_point = True
+            for i, value in valid_points:
+                x = margin + (chart_width * i / (len(data) - 1))
+                y = margin + chart_height - (chart_height * value / 100)
+
+                if first_point:
+                    cr.move_to(x, y)
+                    first_point = False
+                else:
+                    cr.line_to(x, y)
+
+            # Close the path by drawing to bottom corners
+            if valid_points:
+                last_x = margin + (chart_width * (len(data) - 1) / (len(data) - 1))
+                first_x = margin
+                cr.line_to(last_x, margin + chart_height)
+                cr.line_to(first_x, margin + chart_height)
+                cr.close_path()
+                cr.fill()
+
+            # Draw line border
+            cr.set_source_rgb(*color)
+            cr.set_line_width(1.5)
             first_point = True
             for i, value in valid_points:
                 x = margin + (chart_width * i / (len(data) - 1))
@@ -526,18 +615,29 @@ class GPUApplet:
 
             cr.stroke()
 
-        # Draw current value
+        # Draw current value in top-left corner
         current_value = data[-1] if data[-1] is not None else 0
         cr.set_source_rgb(1, 1, 1)
         cr.select_font_face("Arial", cairo.FONT_SLANT_NORMAL,
                             cairo.FONT_WEIGHT_BOLD)
-        cr.set_font_size(11)
-        if chart_type == 'temp':
-            text = f"{int(current_value)}°"
+        cr.set_font_size(self.preferences['chart_font_size'])
+
+        # Create label with prefix
+        if chart_type == 'gpu':
+            prefix = "gpu"
+        elif chart_type == 'temp':
+            prefix = "t"
+        elif chart_type == 'memory':
+            prefix = "mem"
         else:
-            text = f"{int(current_value)}%"
-        text_extents = cr.text_extents(text)
-        cr.move_to(width - text_extents.width - 2, height - 2)
+            prefix = "?"  # Default fallback
+
+        if chart_type == 'temp':
+            text = f"{prefix}:{int(current_value)}°"
+        else:
+            text = f"{prefix}:{int(current_value)}%"
+
+        cr.move_to(3, self.preferences['chart_font_size'] + 2)
         cr.show_text(text)
 
     def update_panel_display(self):
@@ -575,6 +675,16 @@ class GPUApplet:
         # Force redraw
         for area in self.chart_areas.values():
             area.queue_draw()
+
+    def refresh_charts(self):
+        """Refresh all charts (useful when transparency changes)"""
+        # Force redraw of panel charts
+        for area in self.chart_areas.values():
+            area.queue_draw()
+
+        # Force redraw of chart window if open
+        if self.chart_window and self.chart_window.get_visible():
+            self.chart_drawing_area.queue_draw()
 
 
 def applet_factory(applet, iid, data):
