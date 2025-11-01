@@ -1,0 +1,53 @@
+{
+    "show-gpu-load": {
+        "type": "checkbox",
+        "default": true,
+        "description": "Show GPU load percentage",
+        "tooltip": "Display GPU utilization percentage in the panel"
+    },
+    "show-temperature": {
+        "type": "checkbox",
+        "default": true,
+        "description": "Show GPU temperature",
+        "tooltip": "Display GPU temperature in the panel"
+    },
+    "show-memory": {
+        "type": "checkbox",
+        "default": true,
+        "description": "Show GPU memory usage",
+        "tooltip": "Display GPU memory usage percentage in the panel"
+    },
+    "show-chart": {
+        "type": "checkbox",
+        "default": false,
+        "description": "Show chart display mode",
+        "tooltip": "Switch between text and chart display modes"
+    },
+    "chart-width": {
+        "type": "spinbutton",
+        "default": 50,
+        "min": 30,
+        "max": 100,
+        "step": 5,
+        "description": "Chart width (pixels)",
+        "tooltip": "Width of each individual chart in pixels"
+    },
+    "chart-transparency": {
+        "type": "spinbutton",
+        "default": 50,
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "description": "Chart transparency (%)",
+        "tooltip": "Transparency level for chart fill (0-100%)"
+    },
+    "chart-font-size": {
+        "type": "spinbutton",
+        "default": 10,
+        "min": 8,
+        "max": 16,
+        "step": 1,
+        "description": "Chart font size",
+        "tooltip": "Font size for chart labels"
+    }
+}

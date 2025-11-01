@@ -27,7 +27,8 @@ class GPUApplet:
             'show_chart': False,
             'chart_width': 50,  # Width of each individual chart
             'chart_transparency': 50,  # Chart fill transparency (0-100)
-            'chart_font_size': 10  # Font size for chart labels
+            'chart_font_size': 10,  # Font size for chart labels
+            'update_interval': 2  # Update interval in seconds
         }
         self.load_preferences()
 
@@ -61,7 +62,8 @@ class GPUApplet:
         self.setup_menu()
 
         self.update_gpu_info()
-        GLib.timeout_add_seconds(2, self.update_gpu_info)
+        self.timer_id = GLib.timeout_add_seconds(
+            self.preferences['update_interval'], self.update_gpu_info)
 
     def get_gpu_data(self):
         """Get raw GPU data and return as dict"""
@@ -275,6 +277,22 @@ class GPUApplet:
 
         content.pack_start(font_size_box, False, False, 0)
 
+        # Update interval control
+        interval_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,
+                               spacing=10)
+        interval_label = Gtk.Label("Update Interval (seconds):")
+        interval_box.pack_start(interval_label, False, False, 0)
+
+        self.update_interval_spin = Gtk.SpinButton()
+        self.update_interval_spin.set_range(1, 10)
+        self.update_interval_spin.set_increments(1, 1)
+        self.update_interval_spin.set_value(
+            self.preferences['update_interval'])
+        interval_box.pack_start(
+            self.update_interval_spin, False, False, 0)
+
+        content.pack_start(interval_box, False, False, 0)
+
         dialog.show_all()
 
         response = dialog.run()
@@ -284,8 +302,7 @@ class GPUApplet:
             old_chart_width = self.preferences['chart_width']
             old_transparency = self.preferences['chart_transparency']
             old_font_size = self.preferences['chart_font_size']
-            old_transparency = self.preferences['chart_transparency']
-            old_font_size = self.preferences['chart_font_size']
+            old_update_interval = self.preferences['update_interval']
             self.preferences['show_gpu_load'] = \
                 self.gpu_load_check.get_active()
             self.preferences['show_temperature'] = \
@@ -300,10 +317,8 @@ class GPUApplet:
                 int(self.chart_transparency_spin.get_value())
             self.preferences['chart_font_size'] = \
                 int(self.chart_font_size_spin.get_value())
-            self.preferences['chart_transparency'] = \
-                int(self.chart_transparency_spin.get_value())
-            self.preferences['chart_font_size'] = \
-                int(self.chart_font_size_spin.get_value())
+            self.preferences['update_interval'] = \
+                int(self.update_interval_spin.get_value())
             self.save_preferences()
 
             # Switch display mode if chart preference changed
@@ -317,10 +332,9 @@ class GPUApplet:
             elif (old_transparency != self.preferences['chart_transparency'] or
                   old_font_size != self.preferences['chart_font_size']):
                 self.refresh_charts()
-            # Refresh charts if transparency or font size changed
-            elif (old_transparency != self.preferences['chart_transparency'] or
-                  old_font_size != self.preferences['chart_font_size']):
-                self.refresh_charts()
+            # Restart timer if update interval changed
+            elif old_update_interval != self.preferences['update_interval']:
+                self.restart_timer()
 
         dialog.destroy()
 
@@ -499,7 +513,13 @@ class GPUApplet:
 
     def create_chart_areas(self):
         """Create individual drawing areas for each chart type"""
-        chart_height = 24
+        # Get panel height dynamically, fallback to 24 if not available
+        try:
+            panel_height = self.applet.get_size()
+        except:
+            panel_height = 24
+
+        chart_height = panel_height
         chart_width = self.preferences['chart_width']
 
         # GPU Load chart
@@ -644,23 +664,11 @@ class GPUApplet:
 
         # Create label with prefix
         if chart_type == 'gpu':
-            prefix = "gpu"
+            prefix = "g"
         elif chart_type == 'temp':
             prefix = "t"
         elif chart_type == 'memory':
-            prefix = "mem"
-        else:
-            prefix = "?"  # Default fallback
-
-        cr.set_font_size(self.preferences['chart_font_size'])
-
-        # Create label with prefix
-        if chart_type == 'gpu':
-            prefix = "gpu"
-        elif chart_type == 'temp':
-            prefix = "t"
-        elif chart_type == 'memory':
-            prefix = "mem"
+            prefix = "m"
         else:
             prefix = "?"  # Default fallback
 
@@ -703,9 +711,15 @@ class GPUApplet:
 
     def update_chart_sizes(self):
         """Update chart sizes when width preference changes"""
+        # Get panel height dynamically, fallback to 24 if not available
+        try:
+            panel_height = self.applet.get_size()
+        except:
+            panel_height = 24
+
         chart_width = self.preferences['chart_width']
         for area in self.chart_areas.values():
-            area.set_size_request(chart_width, 24)
+            area.set_size_request(chart_width, panel_height)
 
         # Force redraw
         for area in self.chart_areas.values():
@@ -720,6 +734,16 @@ class GPUApplet:
         # Force redraw of chart window if open
         if self.chart_window and self.chart_window.get_visible():
             self.chart_drawing_area.queue_draw()
+
+    def restart_timer(self):
+        """Restart the update timer with new interval"""
+        # Remove existing timer
+        if hasattr(self, 'timer_id') and self.timer_id:
+            GLib.source_remove(self.timer_id)
+
+        # Start new timer with updated interval
+        self.timer_id = GLib.timeout_add_seconds(
+            self.preferences['update_interval'], self.update_gpu_info)
 
 
 def applet_factory(applet, iid, data):

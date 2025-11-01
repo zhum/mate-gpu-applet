@@ -1,6 +1,6 @@
-# MATE GPU Applet
+# GPU Monitor Applet
 
-A comprehensive MATE desktop panel applet that monitors GPU performance with both text and graphical display modes.
+A comprehensive desktop panel applet that monitors GPU performance with both text and graphical display modes. Available for both MATE and Cinnamon desktop environments.
 
 ## Features
 
@@ -16,13 +16,21 @@ A comprehensive MATE desktop panel applet that monitors GPU performance with bot
 
 ## Requirements
 
+### MATE Version
 - MATE Desktop Environment
 - Python 3
 - PyGObject (python3-gi)
+
+### Cinnamon Version
+- Cinnamon Desktop Environment
+
+### GPU Support (Both Versions)
 - For NVIDIA: nvidia-smi (usually comes with NVIDIA drivers)
 - For AMD: radeontop package
 
 ## Installation
+
+### MATE Version
 
 1. Install dependencies:
 
@@ -44,6 +52,29 @@ A comprehensive MATE desktop panel applet that monitors GPU performance with bot
    - Select "Add to Panel..."
    - Find "GPU Monitor" and add it
 
+### Cinnamon Version
+
+1. Install dependencies:
+
+   ```bash
+   # For AMD support:
+   sudo apt install radeontop
+   ```
+
+2. Run the install script:
+
+   ```bash
+   cd cinnamon
+   chmod +x install-cinnamon.sh
+   ./install-cinnamon.sh
+   ```
+
+3. Add to panel:
+   - Right-click on Cinnamon panel
+   - Select "Applets"
+   - Find "GPU Monitor" in the Installed tab and click the '+' button
+   - You may need to restart Cinnamon (Alt+F2, type 'r', press Enter)
+
 ## Usage
 
 ### Text Display Mode
@@ -56,45 +87,75 @@ Switch to chart mode for mini real-time graphs in the panel showing trends for e
 
 ### Preferences
 
-Right-click the applet and select "Preferences" to:
+**MATE Version**: Right-click the applet and select "Preferences"
 
+**Cinnamon Version**: Right-click the applet and select "Configure..." or use Cinnamon Settings > Applets
+
+Available options:
 - Enable/disable individual metrics (GPU load, temperature, memory)
 - Switch between text and chart display modes
 - Adjust chart width (30-100 pixels)
+- Chart transparency and font size settings
 
 ### Full Chart Window
 
-Right-click the applet and select "Show Charts" to open a detailed chart window with:
+**MATE Version**: Right-click the applet and select "Show Charts" to open a detailed chart window with:
 
 - Multi-line graphs for all enabled metrics
 - Grid lines and value labels
 - Color-coded legend
 - 2-minute data history (60 data points)
 
+**Note**: The Cinnamon version currently displays data in text format only. Chart window functionality is planned for future releases.
+
 ## Development
 
+### MATE Version
 To test the applet without installing:
 
 ```bash
 python3 mate_gpu_applet.py
 ```
 
+### Cinnamon Version
+To test the applet:
+
+1. Copy the applet to the development location:
+   ```bash
+   mkdir -p ~/.local/share/cinnamon/applets/gpu-monitor@cinnamon
+   cp cinnamon/gpu-monitor@cinnamon/* ~/.local/share/cinnamon/applets/gpu-monitor@cinnamon/
+   ```
+
+2. Restart Cinnamon (Alt+F2, type 'r', press Enter) and add the applet through the Applets menu
+
 ## Configuration
 
-Settings are automatically saved to `~/.config/mate-gpu-applet.json` and include:
+### MATE Version
+Settings are automatically saved to `~/.config/mate-gpu-applet.json`
 
+### Cinnamon Version
+Settings are managed through Cinnamon's configuration system and accessed via the applet settings
+
+Both versions include:
 - Which metrics to display
 - Text vs chart display mode preference
-- Chart width setting
+- Chart width, transparency, and font size settings
 
 ## Files
 
-- `mate_gpu_applet.py` - Main applet code (606 lines)
+### MATE Version
+- `mate_gpu_applet.py` - Main applet code (751 lines)
 - `org.mate.panel.GPUApplet.mate-panel-applet` - MATE applet configuration
 - `org.mate.panel.applet.GPUAppletFactory.service` - D-Bus service file
 - `mate-gpu-applet.desktop` - Desktop entry
 - `setup.py` - Python setup script
 - `install.sh` - Installation script
+
+### Cinnamon Version
+- `cinnamon/gpu-monitor@cinnamon/applet.js` - Main applet code (JavaScript)
+- `cinnamon/gpu-monitor@cinnamon/metadata.json` - Applet metadata
+- `cinnamon/gpu-monitor@cinnamon/settings-schema.json` - Settings configuration
+- `cinnamon/install-cinnamon.sh` - Installation script
 
 ## License
 
