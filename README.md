@@ -1,162 +1,181 @@
-# GPU Monitor Applet
+# Stock Applet
 
-A comprehensive desktop panel applet that monitors GPU performance with both text and graphical display modes. Available for both MATE and Cinnamon desktop environments.
+A comprehensive desktop panel applet for real-time stock price monitoring with customizable charts and displays. Available for both MATE and Cinnamon desktop environments.
 
-## Features
+![Stock Applet Screenshot](https://via.placeholder.com/800x200/2c3e50/ffffff?text=Stock+Applet+-+Real-time+Stock+Monitoring)
 
-- **GPU Monitoring**: Real-time GPU utilization, temperature, and memory usage
-- **Dual Display Modes**: Switch between text display and graphical charts in panel
-- **Chart Visualization**: Individual mini-charts for each metric with customizable width
-- **Full Chart Window**: Detailed performance charts with grid lines and legends
-- **Configurable Display**: Enable/disable specific metrics (GPU load, temperature, memory)
-- **GPU Support**: NVIDIA (via nvidia-smi) and AMD (via radeontop) GPUs
-- **Persistent Settings**: Preferences saved automatically
-- **Real-time Updates**: Data refreshes every 2 seconds
-- **Lightweight**: Minimal resource usage
+## 🚀 Features
 
-## Requirements
+- **📈 Real-time Stock Tracking**: Live price updates with configurable intervals (1-60 minutes)
+- **🎨 Dual Display Modes**: Text display or interactive charts in your panel
+- **📊 Historical Charts**: Mini-charts and detailed windows with price history
+- **💡 Smart Tooltips**: Current price, daily range, and historical extremes with timestamps
+- **🎨 Customizable Appearance**: Chart colors, transparency, and symbol display
+- **📱 Dynamic Panel Integration**: Charts adapt to panel height automatically
+- **💾 Persistent Data**: Local price history storage for trend analysis
+- **🔐 Secure API**: Native HTTPS requests with Finnhub integration
+- **⚡ Lightweight**: Minimal resource usage with efficient data management
 
-### MATE Version
-- MATE Desktop Environment
-- Python 3
-- PyGObject (python3-gi)
+## 🖥️ Desktop Support
 
-### Cinnamon Version
-- Cinnamon Desktop Environment
+### MATE Desktop Environment
+- Full-featured implementation with preferences dialog
+- Chart window with detailed analysis
+- Dynamic panel sizing
+- Comprehensive tooltips
 
-### GPU Support (Both Versions)
-- For NVIDIA: nvidia-smi (usually comes with NVIDIA drivers)
-- For AMD: radeontop package
+### Cinnamon Desktop Environment
+- Modern settings interface
+- Popup chart display
+- Color customization
+- Real-time updates
 
-## Installation
+## 📋 Requirements
 
-### MATE Version
+- **MATE**: Python 3, PyGObject, MATE Panel
+- **Cinnamon**: Cinnamon Desktop Environment
+- **API**: Free Finnhub API token ([get yours here](https://finnhub.io))
+- **Network**: Internet connection for stock data
 
-1. Install dependencies:
+## 🛠️ Installation
 
+### Quick Setup
+
+1. **Clone the repository:**
    ```bash
-   sudo apt install python3-gi mate-panel-dev
-   # For AMD support:
-   sudo apt install radeontop
+   git clone https://github.com/user/stocks-applet.git
+   cd stocks-applet
    ```
 
-2. Run the install script:
-
+2. **For MATE:**
    ```bash
+   cd mate
    chmod +x install.sh
    ./install.sh
+   mate-panel --replace &
    ```
 
-3. Add to panel:
-   - Right-click on MATE panel
-   - Select "Add to Panel..."
-   - Find "GPU Monitor" and add it
-
-### Cinnamon Version
-
-1. Install dependencies:
-
+3. **For Cinnamon:**
    ```bash
-   # For AMD support:
-   sudo apt install radeontop
+   cp -r cinnamon/stock-applet@cinnamon ~/.local/share/cinnamon/applets/
+   # Restart Cinnamon (Alt+F2, type 'r', Enter)
    ```
 
-2. Run the install script:
+4. **Add to panel:**
+   - Right-click panel → "Add to Panel" → "Stock Applet"
 
-   ```bash
-   cd cinnamon
-   chmod +x install-cinnamon.sh
-   ./install-cinnamon.sh
-   ```
+### API Configuration
 
-3. Add to panel:
-   - Right-click on Cinnamon panel
-   - Select "Applets"
-   - Find "GPU Monitor" in the Installed tab and click the '+' button
-   - You may need to restart Cinnamon (Alt+F2, type 'r', press Enter)
+1. Get free API token at [Finnhub.io](https://finnhub.io)
+2. Right-click applet → "Preferences"
+3. Enter API token and stock symbol (e.g., NVDA, AAPL, TSLA)
 
-## Usage
+## 📖 Usage
 
-### Text Display Mode
-
-The applet shows GPU information as text in the panel: `GPU: 45% | 65°C | Mem: 78%`
-
-### Chart Display Mode
-
-Switch to chart mode for mini real-time graphs in the panel showing trends for each enabled metric.
-
-### Preferences
-
-**MATE Version**: Right-click the applet and select "Preferences"
-
-**Cinnamon Version**: Right-click the applet and select "Configure..." or use Cinnamon Settings > Applets
-
-Available options:
-- Enable/disable individual metrics (GPU load, temperature, memory)
-- Switch between text and chart display modes
-- Adjust chart width (30-100 pixels)
-- Chart transparency and font size settings
-
-### Full Chart Window
-
-**MATE Version**: Right-click the applet and select "Show Charts" to open a detailed chart window with:
-
-- Multi-line graphs for all enabled metrics
-- Grid lines and value labels
-- Color-coded legend
-- 2-minute data history (60 data points)
-
-**Note**: The Cinnamon version currently displays data in text format only. Chart window functionality is planned for future releases.
-
-## Development
-
-### MATE Version
-To test the applet without installing:
-
-```bash
-python3 mate_gpu_applet.py
+### Text Mode
+```
+NVDA: $875.50 [860.25..890.75]
 ```
 
-### Cinnamon Version
-To test the applet:
+### Chart Mode
+- Mini real-time graphs in panel
+- Historical price trends
+- Customizable colors and transparency
 
-1. Copy the applet to the development location:
-   ```bash
-   mkdir -p ~/.local/share/cinnamon/applets/gpu-monitor@cinnamon
-   cp cinnamon/gpu-monitor@cinnamon/* ~/.local/share/cinnamon/applets/gpu-monitor@cinnamon/
-   ```
+### Tooltips
+Hover for comprehensive information:
+- Current symbol and price
+- Today's trading range
+- Historical extremes with timestamps
 
-2. Restart Cinnamon (Alt+F2, type 'r', press Enter) and add the applet through the Applets menu
+## ⚙️ Configuration Options
 
-## Configuration
+| Feature | Description | Options |
+|---------|-------------|---------|
+| **API Token** | Finnhub API key | Required for data |
+| **Stock Symbol** | Symbol to monitor | NVDA, AAPL, TSLA, etc. |
+| **Update Interval** | Data refresh rate | 1-60 minutes |
+| **Display Mode** | Panel appearance | Text or Charts |
+| **Chart Colors** | Line and fill colors | Color picker interface |
+| **Symbol Display** | Show symbol on chart | On/Off |
+| **Chart Size** | Panel integration | Auto-adapts to panel height |
 
-### MATE Version
-Settings are automatically saved to `~/.config/mate-gpu-applet.json`
+## 🔧 Technical Details
 
-### Cinnamon Version
-Settings are managed through Cinnamon's configuration system and accessed via the applet settings
+### Architecture
+- **MATE**: Python 3 + GTK + Cairo graphics
+- **Cinnamon**: JavaScript + GJS + Soup HTTP
 
-Both versions include:
-- Which metrics to display
-- Text vs chart display mode preference
-- Chart width, transparency, and font size settings
+### Data Management
+- Local price history (144 points = 24 hours)
+- Automatic cleanup and rotation
+- Efficient memory usage
 
-## Files
+### Network
+- Native HTTPS libraries (no curl dependency)
+- 10-second timeout for reliability
+- Graceful error handling
+- Secure API communication
 
-### MATE Version
-- `mate_gpu_applet.py` - Main applet code (751 lines)
-- `org.mate.panel.GPUApplet.mate-panel-applet` - MATE applet configuration
-- `org.mate.panel.applet.GPUAppletFactory.service` - D-Bus service file
-- `mate-gpu-applet.desktop` - Desktop entry
-- `setup.py` - Python setup script
-- `install.sh` - Installation script
+### Performance
+- Lightweight memory footprint
+- Non-blocking UI updates
+- Dynamic panel sizing
+- Efficient data structures
 
-### Cinnamon Version
-- `cinnamon/gpu-monitor@cinnamon/applet.js` - Main applet code (JavaScript)
-- `cinnamon/gpu-monitor@cinnamon/metadata.json` - Applet metadata
-- `cinnamon/gpu-monitor@cinnamon/settings-schema.json` - Settings configuration
-- `cinnamon/install-cinnamon.sh` - Installation script
+## 🗂️ Project Structure
 
-## License
+```
+stocks-applet/
+├── mate/                           # MATE Desktop version
+│   ├── stock_applet.py            # Main applet code
+│   ├── install.sh                 # Installation script
+│   ├── README.md                  # MATE-specific documentation
+│   └── *.mate-panel-applet       # MATE configuration files
+├── cinnamon/                      # Cinnamon Desktop version
+│   └── stock-applet@cinnamon/
+│       ├── applet.js              # Main applet code
+│       ├── metadata.json          # Applet metadata
+│       └── settings-schema.json   # Settings configuration
+└── README.md                      # This file
+```
 
-Apache-2.0 License
+## 🚨 Troubleshooting
+
+### No Data Displaying
+- ✅ Verify API token is entered correctly
+- ✅ Check internet connection
+- ✅ Use valid stock symbols (AAPL, NVDA, MSFT)
+- ✅ Check error messages in system logs
+
+### Charts Not Showing
+- ✅ Enable "Show Charts in Panel" in preferences
+- ✅ Ensure panel height is sufficient (>16px)
+- ✅ Verify chart width settings
+
+### Performance Issues
+- ✅ Increase update interval for slower networks
+- ✅ Check system resources
+- ✅ Restart panel if needed
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+## 📄 License
+
+This project is licensed under the Apache-2.0 License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [Finnhub.io](https://finnhub.io) for free stock market API
+- MATE and Cinnamon desktop teams for excellent frameworks
+- Community contributors and testers
+
+---
+
+**Made with ❤️ for Linux Desktop Users**

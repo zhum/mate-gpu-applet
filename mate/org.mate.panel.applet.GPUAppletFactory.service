@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.mate.panel.applet.GPUAppletFactory
-Exec=/usr/lib/mate-applets/mate_gpu_applet.py

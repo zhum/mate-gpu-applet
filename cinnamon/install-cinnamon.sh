@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# GPU Monitor Cinnamon Applet Installation Script
+# Stock Applet Cinnamon Installation Script
 
 set -e
 
-APPLET_UUID="gpu-monitor@cinnamon"
+APPLET_UUID="stock-applet@cinnamon"
 APPLET_DIR="$HOME/.local/share/cinnamon/applets/$APPLET_UUID"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "Installing GPU Monitor Cinnamon Applet..."
+echo "Installing Stock Applet for Cinnamon..."
 
 # Check if Cinnamon is installed
 if ! command -v cinnamon &> /dev/null; then
@@ -32,13 +32,13 @@ echo
 echo "To add the applet to your panel:"
 echo "1. Right-click on the Cinnamon panel"
 echo "2. Select 'Applets'"
-echo "3. Click on 'Download' tab and search for 'GPU Monitor'"
-echo "   OR click on 'Installed' tab and look for 'GPU Monitor'"
+echo "3. Click on 'Download' tab and search for 'Stock Applet'"
+echo "   OR click on 'Installed' tab and look for 'Stock Applet'"
 echo "4. Click the '+' button to add it to your panel"
 echo
-echo "For GPU monitoring to work, ensure you have the required tools:"
-echo "- For NVIDIA GPUs: nvidia-smi (usually comes with NVIDIA drivers)"
-echo "- For AMD GPUs: radeontop package"
-echo "  Install with: sudo apt install radeontop"
+echo "For stock monitoring to work, ensure you have:"
+echo "- curl (usually pre-installed)"
+echo "- A valid Finnhub API token (get one free at https://finnhub.io)"
+echo "- Internet connection for fetching stock data"
 echo
 echo "You may need to restart Cinnamon (Alt+F2, type 'r', press Enter) or log out and back in."
