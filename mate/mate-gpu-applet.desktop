@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=GPU Monitor Applet
+Comment=Monitor GPU usage and temperature
+Icon=utilities-system-monitor
+Exec=/usr/bin/python3 /usr/lib/mate-applets/mate_gpu_applet.py
+Type=Application
+Categories=System;Monitor;
+NoDisplay=true
